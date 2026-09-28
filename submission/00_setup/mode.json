@@ -1,0 +1,20 @@
+{
+  "members": [
+    "trung"
+  ],
+  "assignments": {
+    "trung": "B4-dense"
+  },
+  "self": "trung",
+  "slice": "B4-dense",
+  "degrade": [],
+  "current_slice": "B4-dense",
+  "support_prefill": false,
+  "support_slice": "",
+  "prefill_box_ids": [
+    "adasind_258420.jpg:1",
+    "adasind_258420.jpg:2",
+    "adasind_258420.jpg:3",
+    "adasind_258420.jpg:4"
+  ]
+}
