@@ -1,21 +1,6 @@
 # Quan sát vạch ô đỗ
 
-- Hai vạch `parking_line` đã vẽ (mô tả vị trí trong ảnh):
-  1. Đoạn từ (533, 720) đến (405, 650) — vạch sơn chéo ở tiền cảnh bên trái-giữa, sát mép dưới khung hình, phân
-     ranh giữa hai ô đỗ liền kề trong hàng gần camera nhất.
-  2. Đoạn từ (699, 622) đến (960, 685) — vạch sơn chéo ở phía phải khung hình, thuộc hàng ô đỗ xa hơn (gần dãy
-     ô đối diện xe màu đỏ), cùng hướng hội tụ về điểm biến mất với các vạch khác nên xác định được đây là ranh ô
-     chứ không phải mép làn.
-- Một vạch/dấu sơn hoặc biên **không** vẽ, và vì sao: dải sơn màu vàng nhạt chạy dọc theo chân hàng rào ở hậu
-  cảnh (khoảng x=350–580, y=451–466) không được gán `parking_line`. Dải này song song với hàng rào, không cắt
-  ngang bất kỳ ô đỗ nào và không tạo ranh giới giữa hai ô — đây là vạch chỉ giới/curb-paint đánh dấu mép bãi hoặc
-  lối tiếp cận, không phải vạch chia ô, nên không gán nhãn theo quy tắc ở `docs/11-parking-lines-vi.md`.
-- Polygon `free_space` dừng ở đâu; có phần bị che nào không: đã vẽ 10 polygon `free_space` nhỏ, mỗi polygon phủ
-  một mảng mặt đường trống trong một hàng lối xe chạy, trải từ y≈498 (gần đường chân trời/hàng rào) đến y=720
-  (mép dưới khung hình), toàn chiều rộng ảnh. Các polygon dừng lại trước vị trí chiếc xe đỏ (khoảng x=190–230,
-  y=454–479) — không polygon nào lấn vào vùng xe hay vùng cây/hàng rào phía sau đường chân trời (y<498), vì đó
-  không phải mặt đường quan sát được.
-- Ca chưa chắc cần hỏi người soát (nếu không có, ghi "không có"): các vạch chéo mảnh ở dải y≈498–520 (hàng ô xa
-  nhất, gần đường chân trời) khá ngắn và mờ; không chắc từng đoạn là ranh ô đỗ riêng lẻ hay là điểm bắt đầu bị
-  cắt của cùng một vạch dài hơn — cần người soát xác nhận trên ảnh gốc độ phân giải đầy đủ trước khi coi là hai
-  ô tách biệt.
+- Hai vạch `parking_line` đã vẽ (mô tả vị trí trong ảnh): cả hai là vạch sơn trắng xiên ở **tiền cảnh** của ảnh core `parking-lot-core.jpg` (960×720), mỗi vạch là ranh giới giữa hai ô đỗ xiên của dãy ô gần camera. (1) Vạch giữa-dưới: từ (402,652) tới (538,719), dừng ở mép dưới khung hình vì phần sơn còn lại nằm ngoài ảnh. (2) Vạch bên phải: từ (694,623) tới (955,683). Hai vạch song song, cách nhau đúng một bề rộng ô, và đầu trên của chúng thẳng hàng với mép lối xe chạy. Đó là lý do tôi đọc chúng là vạch **chia ô** chứ không phải vạch dẫn hướng.
+- Một vạch/dấu sơn hoặc biên **không** vẽ, và vì sao: vạch mảnh chạy gần như ngang qua cả ảnh ở giữa cảnh, từ khoảng (0,542) tới (900,508), **không** được gán `parking_line`. Vạch này nối đuôi các ô của dãy giữa, nên nó là biên đầu/đuôi dãy ô (hoặc biên phân hai dãy ô quay lưng vào nhau), không tách hai ô cạnh nhau. Tôi cũng không vẽ đoạn sơn thẳng đứng bị cắt ở góc trái-dưới, khoảng (15–35, 682–720): chỉ thấy khoảng 40 px, không đủ để biết nó chia ô hay chỉ là đầu một vạch khác. Ảnh đối chiếu `parking-lot-contrast.png` cho thấy cùng logic: vạch tiền cảnh chia ô, còn mép cỏ/curb và lối xe chạy ở giữa không phải `parking_line`.
+- Polygon `free_space` dừng ở đâu; có phần bị che nào không: polygon phủ **lối xe chạy trống** giữa hai dãy ô. Mép trên nối các đầu dưới của vạch dãy giữa (khoảng y=531–586), mép dưới nối các đầu trên của vạch dãy tiền cảnh (khoảng y=596–683), kéo ngang toàn bộ bề rộng ảnh (x=0–960). Vùng này không có xe, curb hay vật cản. Chiếc xe đỏ duy nhất nằm ở xa, khoảng (195–220, 457–477), ngoài polygon. Ở hai mép trái/phải, polygon dừng tại biên khung hình; mặt đường ngoài khung là vùng không thấy, không suy ra.
+- Ca chưa chắc cần hỏi người soát (nếu không có, ghi “không có”): ranh giới trên của `free_space` ở nửa phải ảnh (x>700): vạch dãy giữa ở đó rất mờ và xa, nên tôi ước lượng mép lối xe chạy khoảng y≈528–537. Sai số có thể là 5–10 px theo chiều dọc. `free_space` chỉ là nhận xét trên ảnh tĩnh, không phải tuyên bố vùng lái an toàn.

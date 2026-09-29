@@ -4,31 +4,11 @@ Lệnh `python3 lab11.py model` tự ghi bảng số (cùng cách đếm với `
 
 | Zone | n_ref | L missing | L spurious | M missing (`LR_noM` + `R_only`) | M thừa (`LM_noR` + `M_only`) | Lỗi L chính (`what`) |
 |---|---:|---:|---:|---:|---:|---|
-| center | 9 | 3 | 2 | 3 | 7 | WRONG_CLASS (1) |
-| mid | 7 | 0 | 0 | 3 | 1 | — |
-| edge | 3 | 0 | 0 | 2 | 4 | — |
+| center | 7 | 1 | 4 | 3 | 5 | SPURIOUS (3) |
+| mid | 9 | 1 | 1 | 6 | 7 | WRONG_CLASS (1) |
+| edge | 4 | 0 | 0 | 1 | 1 | — |
 
 ## Nhận xét
 
-- **L (tôi) gãy chủ yếu ở zone `center`**: 3 missing + 2 spurious, đều từ một ca duy nhất ở `adasind_012570.jpg`
-  (L6+R7 WRONG_CLASS, L8+R9 BOX_GEOMETRY, R8 MISSING — xem `findings.csv`). Zone `mid` và `edge` của tôi có 0
-  missing/spurious. Ở zone `mid`/`edge`, **M (model) lại là nguồn lỗi chính**: `M thừa` = 1 (mid) và 4 (edge) trên
-  n_ref chỉ 7 và 3 — tỷ lệ thừa cao hơn hẳn L dù mẫu rất nhỏ.
-- **Giả thuyết cho zone `center`**: lỗi của tôi không phải do méo fisheye (vị trí center ít méo nhất) mà do một
-  cụm vật thể chồng lấn — người lái xe máy đứng ngay trước một xe hơi trắng khuất một phần (xem ảnh phóng to
-  trong `findings.csv` dòng L6+R7). Tôi vẽ một box `Bike` rộng trùm cả phần xe phía sau thay vì tách hai box. Đây
-  là lỗi loại **E1_annotator_error** lặp lại (cùng dạng với ca gộp hai xe ba bánh ở vòng `calib`), không phải lỗi
-  hình học ngẫu nhiên — nên đề xuất patch luật ở `20_guideline_patch.md`.
-- **Giả thuyết cho `M thừa` cao ở `center`** (7/9, chủ yếu tại `adasind_012570.jpg` — 4 dòng `M_only (center)`):
-  ảnh này có một cụm xe hơi/van trắng đậu san sát ở hậu cảnh gần đường chân trời; model có thể đang phát hiện
-  từng xe trong cụm đó dù kích thước dưới ngưỡng `H=40` mà lớp học quy ước, hoặc dưới `ignore`/ngoài phạm vi gán
-  nhãn của bài. Đây **không hẳn là model sai** mà nhiều khả năng là lệch quy ước phạm vi (**E2_guideline_gap**):
-  model không biết luật `H=40` của lớp, nên không thể kết luận là lỗi miền dữ liệu (`E4_model_domain`) chỉ từ một
-  frame.
-- **Giả thuyết `E4_model_domain` cho zone `edge`**: `M thừa`=4 và `M missing`=2 trên chỉ 3 vật edge — tỷ lệ lỗi
-  rất cao, phù hợp với giả thuyết model gốc (huấn luyện trên ảnh phẳng) gãy ở vùng méo cạnh rìa fisheye. Tuy
-  nhiên **n_ref=3 quá nhỏ để kết luận** — cần nhiều slice/frame hơn (ngoài phạm vi 3 frame của bài này) mới đủ
-  bằng chứng; ghi nhận đây là giả thuyết cần kiểm thêm, không phải kết luận (`E5_unresolved` ở mức tổng thể).
-- **Giới hạn của slice 3 frame**: một slice chỉ có 3 ảnh (19 vật in-scope tổng cộng, riêng edge chỉ 3 vật) không
-  đủ để tách bạch giữa "model kém ở rìa vì méo hình học" và "model kém ở rìa vì ít dữ liệu huấn luyện có rìa
-  fisheye" — cả hai giả thuyết đều hợp lý và cần tập dữ liệu lớn hơn để phân xử.
+- Zone nào người (L) và model (M) gãy nhiều nhất, dẫn số ở bảng trên: **L gãy nhiều nhất ở `center`**: 4 spurious + 1 missing trên n_ref=7. Cụ thể là 014670 L2 (mảng vàng sau người, E1), 014670 L6 (ca sát H=40), 034080 L9 (vật < H=40, E1) và 034080 L10/R2 (box lệch lên ~20 px, spurious + missing cùng một xe). **M gãy nhiều nhất ở `mid`**: 6 missing + 7 thừa trên n_ref=9. `edge` ít lỗi nhất cho cả hai (L 0/0; M 1/1 trên n_ref=4).
+- Giả thuyết vì sao (méo fisheye, box lỏng, thiếu `ego_body`, ...) và giới hạn của slice ba frame: lỗi của **L** không do méo rìa. Chúng tập trung ở vật **nhỏ và xa gần tâm ảnh** (cao 35–47 px), nơi chênh vài pixel ở mép trên đổi vật từ ngoài sang trong phạm vi H=40, và một ca đọc quá mức vật bị che. Lỗi của **M** ở `mid` gần như toàn bộ là **sai taxonomy chứ không sai hình học**: xe ba bánh bị gọi Truck/Car (5 box, IoU cao) và rider bị tách thành Pedestrian + Bike (001320 M3; 034080 M7, M8, M9, M12). `compare` tính mỗi ca sai class thành một missing + một thừa, nên số M ở `mid` bị thổi phồng; vật ở mid của slice này lại chủ yếu là xe ba bánh và xe máy chở người. Không kết luận "model yếu ở mid vì méo": `edge` (vùng méo nhất) M chỉ sai 1/4, và `iou_sweep.md` cho thấy số M ở mid gần như không đổi từ IoU 0.3 đến 0.7 (matched 4→3), tức vấn đề là class chứ không phải độ ôm box. **Giới hạn:** chỉ 3 frame, 20 box reference, 1 camera; mỗi zone chỉ 4–9 vật, một ca đổi là đổi 10–25% số của zone. Teaching reference có ca sát ngưỡng còn tranh luận (014670 L6), nên các số này là tín hiệu để chọn ca soi, không phải tỷ lệ lỗi.

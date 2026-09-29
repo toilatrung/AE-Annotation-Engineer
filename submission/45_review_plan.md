@@ -5,22 +5,17 @@ giải thích dữ liệu thật bạn vừa làm; nó không thay cho kế ho�
 
 | Lát cắt / frame | Số ca và loại lỗi | Vì sao review trước | Bằng chứng cần giữ |
 |---|---|---|---|
-| `adasind_012570.jpg` (slice `B1-dense`) | 16 dòng `r3_diag` liên quan đến frame này: 1 ca `E1_annotator_error` đã rework (`L6` gộp Bike+Car) + 2 ca `BOX_GEOMETRY` nhỏ (P2) + 4 ca `E4_model_domain` (model gán nhầm `Car`/`Truck` cho `ThreeWheeler`, đôi khi trùng lặp cả hai nhãn) | Frame có mật độ vật thể cao nhất (8 box) và cụm xe/người chồng lấn nhiều nhất trong 3 frame — nơi tôi thực sự mắc lỗi gộp box (không phải giả định), có bằng chứng rework đo được cải thiện (`rework/delta.md`: center matched 6→8) | `findings.csv` (object_ref `L6`, `L8+M12`, `R7+M9`, `R8+M6`, `R9+M13`); `screenshots/l6_merge_before_after.png`; `r3_diag/model_compare.html` |
-| `adasind_036720.jpg` (slice `B1-dense`) | 1 ca `LR_noM MISSING` (`L4+R1`): model bỏ sót hoàn toàn một `ThreeWheeler` chiếm >1/3 khung hình, rất gần và bị cắt bởi cả rìa ống kính lẫn biên phải | Đại diện cho nhóm "vật cực gần ego, bị cắt nhiều" — khác hẳn giả thuyết méo-rìa-thông-thường; model có điểm mù đúng lúc vật gần nhất, rủi ro an toàn cao hơn lỗi ở vật xa | `findings.csv` object_ref `L4+R1`; `submission/30_escalation_ticket.md` Ticket 2; `r3_diag/model_compare.html` |
+| Vật nhỏ/xa ở zone `center`, cao 35–47 px (B1-edge: `adasind_014670.jpg` L6, L2; `adasind_034080.jpg` L9, L10) | L ở center: 4 spurious + 1 missing trên n_ref=7 (`zone_table.md`). Trong đó 2 ca tranh chấp ngưỡng H=40 (E2/E1), 1 ca đọc quá mức vật bị che (E1), 1 ca box lệch ~20 px (E1). Sau rework còn 1 spurious (ca H=40 đang escalate). | Đây là nơi **nhãn người** gãy nhiều nhất, và nguyên nhân chủ yếu là luật/đo đạc chứ không phải méo fisheye. Sửa luật R01b sẽ giảm nhiễu cho mọi slice. | Crop ≥4× kèm lưới toạ độ, số đo chiều cao L/R/M, `screenshots/b1edge_014670_L6_H40_borderline.png`, `rework/delta.md`. |
+| Xe ba bánh và rider ở zone `mid` (`adasind_001320.jpg`, `adasind_014670.jpg`, `adasind_034080.jpg`) | M ở mid: 6 missing + 7 thừa trên n_ref=9. 10 dòng `E4_model_domain`: ThreeWheeler → Truck/Car (5 box) và rider tách Pedestrian + Bike (5 box). | Nếu dùng model này làm pre-label, annotator phải sửa class ở gần như mọi xe ba bánh/xe máy chở người. Cần kiểm trước khi tin số pre-label. Lỗi class chứ không phải hình học (`iou_sweep.md`: M mid matched 4→3 từ IoU 0.3 → 0.7). | `r3_diag/model_compare.md`, `model_compare.html`, `iou_sweep.md`, các dòng r3_diag M3/M5–M12. |
 
-**Giới hạn của kết luận từ ba frame ADASIND:** một slice 3 frame, 19 vật in-scope (chỉ 3 vật ở zone `edge`) là mẫu
-quá nhỏ để suy ra tỷ lệ lỗi tổng thể của cả tập dữ liệu hay khẳng định chắc chắn nguyên nhân gốc (`E4_model_domain`
-cho zone `edge` chỉ dựa trên 3 mẫu — xem cảnh báo ở `r3_diag/zone_table.md`). Mẫu lặp lại 5 lần của lỗi
-`ThreeWheeler→Car/Truck` là bằng chứng đủ mạnh để escalate, nhưng các giả thuyết khác (ví dụ model gãy ở edge vì
-méo hình) vẫn cần thêm dữ liệu để xác nhận.
+Giới hạn của kết luận từ ba frame ADASIND: chỉ 3 frame (20 box reference) từ **một** camera fisheye hướng trước, gắn trên xe hai bánh, cùng một khu phố và điều kiện nắng ban ngày. Mỗi zone chỉ 4–9 vật nên một ca đổi là đổi 10–25% số của zone. Teaching reference có ca còn tranh chấp (014670 L6 ngưỡng H, L4 Bus/Truck). Vì vậy đây là **tín hiệu chọn chỗ soi**, không phải tỷ lệ lỗi và không suy ra cho camera rear/left/right của hệ SVM.
 
 ## Chuyển sang kế hoạch bốn camera giả lập
 
-Cách soát độ phủ của 200 frame ở `45_sampling_plan.csv`: rải mẫu theo thời gian/tuyến đường/điều kiện sáng khác
-nhau trong mỗi camera, tránh lấy nhiều frame liên tiếp từ cùng một đoạn video ngắn — hai frame cách nhau vài trăm
-mili-giây của cùng một tình huống (ví dụ cùng một xe đang đi qua) thực chất là **một** ca lặp lại, không phải hai
-ca độc lập; nếu đếm cả hai vào "200 ca đã review" sẽ phóng đại độ phủ thật. Kế hoạch 200 frame (phân theo
-`normal`/`hard` × 4 camera) chỉ giúp **tìm ra ca cần soi kỹ** theo phân tầng rủi ro đã biết trước (seam, điểm mù,
-backlight...); nó **chưa đo được tỷ lệ lỗi** của toàn bộ 50.000 frame vì đây là mẫu phân tầng có chủ đích
-(stratified, ưu tiên ca khó), không phải mẫu ngẫu nhiên đơn thuần — muốn ước lượng tỷ lệ lỗi tổng thể cần lấy mẫu
-ngẫu nhiên (không phân tầng) riêng, tách bạch với mục tiêu "tìm ca khó" của 200 frame này.
+Cách soát độ phủ của 200 frame ở `45_sampling_plan.csv` (kể cả tránh đếm nhiều frame liền nhau trong cùng cảnh
+như nhiều ca độc lập), và vì sao kế hoạch đó chỉ giúp tìm ca cần soi, chưa đo được tỷ lệ lỗi:
+
+1. **Phân tầng trước, rồi mới lấy mẫu:** chia 50.000 frame theo `camera_id` × `normal/hard`. Nhãn hard lấy từ metadata/tín hiệu có sẵn: tốc độ thấp/lùi xe, đêm/ngược sáng, số VRU theo pre-label, vật trong vùng seam, vật cao 35–45 px. Sau đó lấy ngẫu nhiên trong từng ô theo số ở CSV (8 ô, tổng 200).
+2. **Chống trùng cảnh:** gom frame theo `drive_id` + cửa sổ thời gian 10 giây. Mỗi cửa sổ tối đa 1 frame cho mỗi camera, và không quá 5% mỗi ô đến từ cùng một chuyến. Frame từ bốn camera cùng một timestamp được đánh dấu là **một sự kiện**, để khi đếm "ca seam" không nhân bốn.
+3. **Soát độ phủ sau khi chọn:** lập bảng đếm theo camera × điều kiện (ngày/đêm, mưa, đô thị/ngoại ô) × loại vật (6 class, riêng ThreeWheeler và rider có người ngồi sau) × zone bán kính. Ô nào < 3 mẫu thì lấy bổ sung có chủ đích và ghi rõ là "chủ đích", không tính vào ước lượng.
+4. **Vì sao chưa đo được tỷ lệ lỗi:** các ô hard được lấy dư có chủ đích (116/200 = 58% hard, trong khi hard trong 50.000 frame có thể chỉ vài %), nên tỷ lệ lỗi thô trên 200 frame bị lệch về phía ca khó. Muốn ước lượng tỷ lệ cho cả tập phải cân lại theo trọng số tầng hoặc lấy thêm một mẫu ngẫu nhiên đơn giản. Ngoài ra 200 frame chia cho 8 ô chỉ còn 20–30 frame mỗi ô, khoảng tin cậy rất rộng. Kế hoạch này dùng để **tìm và phân loại ca cần soi**, không để công bố chất lượng.

@@ -5,45 +5,33 @@
 | zone | block | what | count |
 |---|---|---|---:|
 | center | B1 | BOX_GEOMETRY | 1 |
-| center | B1 | MISSING | 7 |
-| center | B1 | SPURIOUS | 8 |
-| center | B1 | WRONG_CLASS | 1 |
-| center | C0 | MISSING | 1 |
-| edge | B1 | MISSING | 2 |
-| edge | B1 | SPURIOUS | 4 |
-| mid | B1 | ATTRIBUTE | 1 |
-| mid | B1 | MISSING | 3 |
-| mid | B1 | SPURIOUS | 1 |
-| mid | C0 | MISSING | 1 |
+| center | B1 | MISSING | 3 |
+| center | B1 | SPURIOUS | 11 |
+| center | B1 | WRONG_CLASS | 2 |
+| center | C0 | SPURIOUS | 2 |
+| edge | B1 | BOX_GEOMETRY | 1 |
+| edge | B1 | MISSING | 1 |
+| edge | B1 | SPURIOUS | 1 |
+| mid | B1 | BOX_GEOMETRY | 1 |
+| mid | B1 | MISSING | 6 |
+| mid | B1 | SPURIOUS | 7 |
+| mid | B1 | WRONG_CLASS | 3 |
 | mid | C0 | SPURIOUS | 1 |
-| unknown | B1 | BOX_GEOMETRY | 2 |
 
 ## Top defects
-- SPURIOUS: 14 (ví dụ frame adasind_019560.jpg)
-- MISSING: 14 (ví dụ frame adasind_019560.jpg)
-- BOX_GEOMETRY: 3 (ví dụ frame adasind_036720.jpg)
+- SPURIOUS: 22 (ví dụ frame adasind_019560.jpg)
+- MISSING: 10 (ví dụ frame adasind_001320.jpg)
+- WRONG_CLASS: 5 (ví dụ frame adasind_014670.jpg)
 
 ## Phân tích của bạn
 
 Hai bảng trên do `python3 lab11.py card` tính từ `findings.csv`; chạy lại lệnh sẽ cập nhật bảng và giữ nguyên mục này. Viết cho lỗi nổi bật nhất, dẫn frame/`object_ref`.
 
-- **Nguyên nhân khả dĩ (`why`) và vì sao bạn nghĩ vậy:** Phần lớn SPURIOUS/MISSING ở `center` (8 spurious, 7
-  missing tại slice B1-dense) đến từ **một mẫu lặp lại 5 lần trong cả 3 frame**: model (frozen YOLO26m) không có
-  lớp `ThreeWheeler`, luôn thay bằng `Car` và/hoặc `Truck` — ví dụ `adasind_001320.jpg` L2+R3 (M5 gán `Truck`),
-  `adasind_012570.jpg` L5+R4 (model xuất cả `M8 Car` **và** `M10 Truck` trùng khít cho cùng một box),
-  `adasind_036720.jpg` L3+R3 (`M4 Car`). Đây là `E4_model_domain` có bằng chứng lặp lại nhiều lần, không phải suy
-  đoán từ một ca — nên `action=escalate` cho `ai_team` thay vì chỉ ghi chú. Nguyên nhân thứ hai (khác hẳn, do
-  chính tôi) là ca `adasind_012570.jpg` object `L6`: tôi vẽ một box `Bike` rộng trùm cả người lái xe máy **và**
-  một phần xe hơi khuất phía sau (`E1_annotator_error`) — cả reference (`R7 Car`, `R8 Bike`) và model
-  (`M9 Car`, `M6 Bike`) đều độc lập xác nhận đây là hai vật thể tách biệt, nên đủ bằng chứng để rework thay vì chỉ
-  ghi nhận là góc nhìn khác (`E0`).
-- **Cách sửa và ai nhận việc (`owner`):** Ca `L6` do tôi (`owner=annotator`) sửa ngay trong vòng rework — đã tách
-  thành `Bike` (330,923,360,992) và `Car` (335,922,385,979) theo toạ độ R/M, xem `submission/rework/delta.md`
-  (zone `center`: matched 6→8, missing 3→1, spurious 2→1). Ca thiếu lớp `ThreeWheeler` của model không thuộc phạm
-  vi sửa của tôi — đã ghi `owner=ai_team, action=escalate` trong `findings.csv` và đề xuất bổ sung lớp riêng ở
-  `20_guideline_patch.md`.
-- **Bằng chứng (ảnh trong `screenshots/`, dòng findings, rule):** Chi tiết toạ độ và box của cả ba nguồn (L/R/M)
-  cho từng ca nằm trong `findings.csv` cột `evidence` (dòng `round=r3_diag`, các `object_ref` L2+R3, L3+R6, L5+R4,
-  L7+R6, L3+R3, L6, R7+M9, R8+M6...); rule liên quan: R01 (ngưỡng H=40, không ảnh hưởng ca này), R05 (`truncated`
-  hình học), và nguyên tắc "một vật thể — một box" (chưa có `rule_id` riêng, đề xuất thêm ở
-  `20_guideline_patch.md`). Ảnh chụp minh chứng ở `screenshots/l6_merge_before_after.png`.
+- Nguyên nhân khả dĩ (`why`) và vì sao bạn nghĩ vậy: lỗi nổi bật nhất là **SPURIOUS (22)**, nhưng con số gộp này chứa hai nhóm khác bản chất.
+  - (a) **11/22 dòng là box chỉ model có** (`M_only` ở r3_diag). Tôi xếp 10 dòng vào `E4_model_domain` và 1 dòng vào `E5_unresolved` (034080 M11, vật quá mờ) vì cùng một mẫu lặp trên cả 3 frame, không phải một box lệch. Xe ba bánh bị gọi Truck/Car với IoU cao (001320 M5, M6; 014670 M6, M7; 034080 M10), và rider bị tách thành Pedestrian (001320 M3; 034080 M7, M8, M12). Nguyên nhân khả dĩ là taxonomy model khác quy ước R03/R04 của khoá, không phải méo fisheye, vì `edge` ít lỗi nhất.
+  - (b) **11 dòng còn lại là box của tôi (L)**. Chúng chỉ ứng với 8 vật, vì `compare` ghi cùng vật ở cả dòng `r1_craft` lẫn `r3_diag`: C0 L6 (tách người ngồi trên yên thành Pedestrian, E1/R03), C0 L9 (tấm nhựa xanh, E1), 014670 L2 (mảng vàng sau người, E1), 034080 L9 (vật < H=40, E1) và 034080 L10 (box lệch, E1/R02). Ba ca không phải lỗi annotator: 014670 L6 là ca sát ngưỡng H=40 (`E2_guideline_gap`, R vẽ cùng vật nhưng cao 37 px); 014670 L4 Bus/Truck không phân định được vì đầu xe ngoài khung (`E2`); C0 L5 là xe máy đỗ bị che quá nửa (`E5_unresolved`).
+- Cách sửa và ai nhận việc (`owner`):
+  - Nhóm (b), lỗi annotator, đã **rework** trong B1-edge (`rework/delta.md`: center spurious 4→1, missing 1→0). C0 không khoá lại, nhưng bài học rider được áp dụng ở P2: 034080 L5/L6 đúng rider theo R.
+  - Nhóm (a) giao `ai_team`: ánh xạ lại lớp đầu ra (auto-rickshaw → ThreeWheeler, gộp person-on-two-wheeler → Bike) hoặc fine-tune trước khi dùng model làm pre-label. Không sửa nhãn L theo model.
+  - Ca H=40 và Bus/Truck giao `guideline` qua `30_escalation_ticket.md` và `20_guideline_patch.md`.
+- Bằng chứng (ảnh trong `screenshots/`, dòng findings, rule): `screenshots/b1edge_014670_L6_H40_borderline.png` (L/R/M cùng khung: M gọi ThreeWheeler là Truck/Car, R box 37 px), `screenshots/b1edge_034080_rework_before_after.png` (L9 xoá, L10 hạ xuống), `screenshots/c0_019560_rider_and_blue_sheet.png` (R03), `screenshots/b1edge_014670_L4_bus_vs_truck.png` (R04). Dòng findings: `r3_diag` 001320 M3/M5/M6, 014670 M6/M7, 034080 M7–M12 (E4); `r1_craft` 014670 L2, 034080 L9/L10 (E1, rework); 014670 L6 và L4 (E2, escalate). Số liệu: `r3_diag/model_compare.md`, `iou_sweep.md` (M ở mid không cải thiện khi hạ IoU xuống 0.3 → lỗi class, không phải hình học).

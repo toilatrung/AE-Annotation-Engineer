@@ -1,19 +1,12 @@
 # Guideline patch
 
-- **Rule mới đề xuất (R12 — Một vật thể, một box):** Khi hai vật thể chồng lấn hoặc đứng/đậu sát nhau — dù cùng
-  lớp (hai `ThreeWheeler` đậu liền nhau) hay khác lớp (người lái xe máy đứng ngay trước một xe hơi khuất một
-  phần) — mỗi vật thể còn phân biệt được ranh giới riêng (dù mờ) phải có box riêng. Không gộp thành một box chỉ
-  vì tại thời điểm vẽ nhanh chúng trông như một khối; dừng lại kiểm tra "đây có chắc là MỘT vật thể vật lý không"
-  trước khi chốt box ở mọi cụm vật chồng lấn.
-- **Áp dụng cho:** box của cả 6 class động (`Bus, Bike, Car, Pedestrian, Truck, ThreeWheeler`), đặc biệt ở zone
-  `center` nơi vật thường đứng gần nhau nhất theo góc nhìn camera.
-- **Vì sao luật hiện tại (`docs/02-rules-vi.md`) không đủ:** R03 chỉ quy định trường hợp cụ thể "rider + xe hai
-  bánh = một box" (gộp có chủ đích, ngoại lệ). Không có rule nào nói rõ hướng ngược lại — khi nào PHẢI tách hai
-  vật chồng lấn thành hai box. Tôi đã mắc đúng lỗi này hai lần độc lập trong buổi: vòng `calib` (gộp hai
-  `ThreeWheeler` đậu sát nhau thành một box, xem `findings.csv` dòng `calib/L2/R5/R6`) và vòng `r1_craft`
-  (`adasind_012570.jpg`, gộp một `Bike` và một `Car` khuất phía sau thành một box, xem dòng `L6/R7+M9/R8+M6`) —
-  cả hai lần đều được cả reference lẫn model độc lập xác nhận là hai vật thể riêng biệt. Đây không phải trùng hợp
-  ngẫu nhiên mà là một xu hướng lặp lại cần luật rõ ràng để nhắc kiểm tra.
-- **`rules_version` mới:** v1.0.0 → v1.1.0
-- **Hiệu lực từ:** áp dụng ngay từ vòng `rework` của tôi (đã tách box theo rule này trong
-  `submission/rework/annotations-v2.xml`); đề xuất áp dụng cho mọi vòng tiếp theo của lớp.
+- **Rule mới đề xuất:** **R01b — Dải sát ngưỡng H (35–45 px).**
+  - Đo chiều cao từ **mép trên của phần vật nhìn thấy** (mui/nóc/đầu người, kể cả mui vải sáng màu) tới điểm tiếp đất hoặc mép dưới nhìn thấy, trên ảnh gốc phóng to ≥4×.
+  - Nếu phép đo rơi vào 35–45 px, người gán nhãn vẫn vẽ box theo đúng phần thấy và bật attribute mới `near_threshold=true`.
+  - Khi so với reference, box có `near_threshold=true` ở **một trong hai phía** được tính **don't-care**: không TP, không FP, không FN, giống cách R09 xử lý ignore.
+  - Ví dụ ca thật: `adasind_014670.jpg`, đuôi auto-rickshaw (360–397, 953–1000). Tôi đo ~43–47 px (L cao 47, model 49), reference vẽ (360,964)–(396,1001) cao 37 px. Chỉ lệch ~10 px ở mép trên mà vật đổi từ "L thừa" sang "đúng". Ví dụ thứ hai: `adasind_034080.jpg` vật ở xa (335–376, 1063–1105): R 35 px, M 35/39 px, L cũ 42 px.
+  - Ví dụ phụ (R02b, đồ mang theo): túi/đồ người cầm sát thân (034080, người phải, túi trắng 995–1015) **được** nằm trong box `Pedestrian`. Đồ đặt xuống đất thì không.
+- **Áp dụng cho:** R01 (phạm vi H=40), mọi class động; thêm attribute `near_threshold` (checkbox) cho 6 class trong `assets/labels.json`. Cách tính trong `compare`/`local-quality` cần coi box `near_threshold` là don't-care. Không ảnh hưởng `ignore_region`.
+- **Vì sao luật hiện tại (`docs/02-rules-vi.md`) không đủ:** R01 chỉ nói "vật cao ≥ 40 px phải có box; thấp hơn không box". Luật không nói đo từ đâu (mui xe mờ có tính không), không có dung sai, trong khi hai người vẽ tay trên vật xa, mờ lệch nhau 5–10 px là bình thường. Hệ quả trong slice B1-edge: 2/5 lỗi L ở zone `center` (`r3_diag/zone_table.md`) và 1 dòng escalate là tranh chấp ngưỡng chứ không phải sai nhãn. Số đo chất lượng vì vậy phản ánh nhiễu vẽ tay nhiều hơn lỗi thật.
+- **`rules_version` mới:** v1.0.0 → **v1.1.0**.
+- **Hiệu lực từ:** round `rework` tiếp theo sau khi Lab Coach/guideline owner duyệt; bắt buộc cho mọi slice từ lượt gán nhãn kế tiếp. Các lock hiện tại (r1_craft `9534-59A5`, rework `A2E1-0B86`) giữ nguyên, không khoá lại hồi tố.

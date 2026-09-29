@@ -2,30 +2,29 @@
 <annotations>
   <version>1.1</version>
   <meta>
-    <task>
-      <id>20</id>
-      <name>Day11 · ADASIND · C0 · raw_fisheye</name>
+    <job>
+      <id>18</id>
       <size>1</size>
       <mode>annotation</mode>
       <overlap>0</overlap>
       <bugtracker></bugtracker>
-      <created>2026-09-28 10:42:33.968538+00:00</created>
-      <updated>2026-09-28 11:28:46.261807+00:00</updated>
+      <created>2026-09-29 04:07:26.054428+00:00</created>
+      <updated>2026-09-29 04:07:31.601536+00:00</updated>
       <subset>default</subset>
       <start_frame>0</start_frame>
       <stop_frame>0</stop_frame>
       <frame_filter></frame_filter>
       <segments>
         <segment>
-          <id>23</id>
+          <id>18</id>
           <start>0</start>
           <stop>0</stop>
-          <url>http://localhost:8080/api/tasks/20/dataset/export/api/jobs/23</url>
+          <url>http://localhost:8080/api/jobs/18/dataset/export/api/jobs/18</url>
         </segment>
       </segments>
       <owner>
-        <username>labadmin</username>
-        <email>labadmin@example.local</email>
+        <username>admin</username>
+        <email>huypham0126@gmail.com</email>
       </owner>
       <assignee></assignee>
       <labels>
@@ -234,8 +233,8 @@ privacy_or_policy</values>
           </attributes>
         </label>
       </labels>
-    </task>
-    <dumped>2026-09-29 02:57:46.914727+00:00</dumped>
+    </job>
+    <dumped>2026-09-29 04:07:33.794693+00:00</dumped>
   </meta>
   <image id="0" name="adasind_019560.jpg" width="1080" height="1920">
     <polygon label="ignore_region" source="file" occluded="0" points="0.00,906.30;0.00,0.00;1080.00,0.00;1080.00,906.30;1080.00,839.13;1080.00,772.47;1080.00,706.83;1080.00,642.71;1080.00,580.59;1080.00,520.95;1080.00,464.24;1080.00,410.90;1080.00,361.33;1080.00,315.91;1045.96,274.98;989.25,238.85;929.61,207.81;867.49,182.08;803.37,161.86;737.73,147.31;671.07,138.53;603.90,135.60;536.73,138.53;470.07,147.31;404.43,161.86;340.31,182.08;278.19,207.81;218.55,238.85;161.84,274.98;108.50,315.91;58.93,361.33;13.51,410.90;0.00,464.24;0.00,520.95;0.00,580.59;0.00,642.71;0.00,706.83;0.00,772.47;0.00,839.13;0.00,906.30" z_order="0">
@@ -244,30 +243,53 @@ privacy_or_policy</values>
     <polygon label="ignore_region" source="file" occluded="0" points="1080.00,906.30;1080.00,1920.00;0.00,1920.00;0.00,906.30;0.00,906.30;0.00,973.47;0.00,1040.13;0.00,1105.77;0.00,1169.89;0.00,1232.01;0.00,1291.65;0.00,1348.36;13.51,1401.70;58.93,1451.27;108.50,1496.69;161.84,1537.62;218.55,1573.75;278.19,1604.79;340.31,1630.52;404.43,1650.74;470.07,1665.29;536.73,1674.07;603.90,1677.00;671.07,1674.07;737.73,1665.29;803.37,1650.74;867.49,1630.52;929.61,1604.79;989.25,1573.75;1045.96,1537.62;1080.00,1496.69;1080.00,1451.27;1080.00,1401.70;1080.00,1348.36;1080.00,1291.65;1080.00,1232.01;1080.00,1169.89;1080.00,1105.77;1080.00,1040.13;1080.00,973.47;1080.00,906.30" z_order="0">
       <attribute name="reason">lens_border</attribute>
     </polygon>
-    <box label="ThreeWheeler" source="manual" occluded="0" xtl="44.15" ytl="770.26" xbr="98.50" ybr="853.90" z_order="0">
+    <box label="ThreeWheeler" source="manual" occluded="0" xtl="43.00" ytl="772.00" xbr="98.00" ybr="853.00" z_order="0">
       <attribute name="occluded">false</attribute>
       <attribute name="truncated">false</attribute>
       <attribute name="edge_zone">true</attribute>
     </box>
-    <box label="ThreeWheeler" source="manual" occluded="0" xtl="320.90" ytl="762.95" xbr="382.86" ybr="840.30" z_order="0">
+    <box label="ThreeWheeler" source="manual" occluded="0" xtl="292.00" ytl="738.00" xbr="337.00" ybr="825.00" z_order="0">
       <attribute name="occluded">false</attribute>
       <attribute name="truncated">false</attribute>
       <attribute name="edge_zone">false</attribute>
     </box>
-    <box label="Bike" source="manual" occluded="0" xtl="415.00" ytl="733.00" xbr="527.90" ybr="918.60" z_order="0">
-      <attribute name="occluded">false</attribute>
-      <attribute name="truncated">false</attribute>
-      <attribute name="edge_zone">false</attribute>
-    </box>
-    <box label="Bike" source="manual" occluded="0" xtl="590.85" ytl="737.50" xbr="729.40" ybr="910.90" z_order="0">
+    <box label="ThreeWheeler" source="manual" occluded="0" xtl="355.00" ytl="728.00" xbr="428.00" ybr="845.00" z_order="0">
       <attribute name="occluded">true</attribute>
       <attribute name="truncated">false</attribute>
       <attribute name="edge_zone">false</attribute>
     </box>
-    <box label="Bike" source="manual" occluded="0" xtl="887.90" ytl="793.00" xbr="985.00" ybr="897.40" z_order="0">
+    <box label="Bike" source="manual" occluded="0" xtl="420.00" ytl="732.00" xbr="535.00" ybr="917.00" z_order="0">
       <attribute name="occluded">false</attribute>
       <attribute name="truncated">false</attribute>
       <attribute name="edge_zone">false</attribute>
     </box>
+    <box label="Bike" source="manual" occluded="0" xtl="590.00" ytl="785.00" xbr="625.00" ybr="832.00" z_order="0">
+      <attribute name="occluded">true</attribute>
+      <attribute name="truncated">false</attribute>
+      <attribute name="edge_zone">false</attribute>
+    </box>
+    <box label="Pedestrian" source="manual" occluded="0" xtl="625.00" ytl="745.00" xbr="690.00" ybr="905.00" z_order="0">
+      <attribute name="occluded">false</attribute>
+      <attribute name="truncated">false</attribute>
+      <attribute name="edge_zone">false</attribute>
+    </box>
+    <box label="Bike" source="manual" occluded="0" xtl="596.00" ytl="800.00" xbr="730.00" ybr="910.00" z_order="0">
+      <attribute name="occluded">true</attribute>
+      <attribute name="truncated">false</attribute>
+      <attribute name="edge_zone">false</attribute>
+    </box>
+    <box label="Bike" source="manual" occluded="0" xtl="893.00" ytl="800.00" xbr="960.00" ybr="895.00" z_order="0">
+      <attribute name="occluded">true</attribute>
+      <attribute name="truncated">false</attribute>
+      <attribute name="edge_zone">false</attribute>
+    </box>
+    <box label="Pedestrian" source="manual" occluded="0" xtl="975.00" ytl="740.00" xbr="1040.00" ybr="912.00" z_order="0">
+      <attribute name="occluded">true</attribute>
+      <attribute name="truncated">false</attribute>
+      <attribute name="edge_zone">false</attribute>
+    </box>
+    <polygon label="ignore_region" source="manual" occluded="0" points="0.00,1070.00;28.00,1095.00;32.00,1230.00;48.00,1350.00;75.00,1430.00;110.00,1505.00;150.00,1560.00;100.00,1565.00;40.00,1500.00;0.00,1450.00" z_order="0">
+      <attribute name="reason">ego_body</attribute>
+    </polygon>
   </image>
 </annotations>

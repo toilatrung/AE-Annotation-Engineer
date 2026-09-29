@@ -2,32 +2,16 @@
 
 ## Ticket 1
 
-- **Frame:** `adasind_001320.jpg`, `adasind_012570.jpg`, `adasind_036720.jpg` (cả 3 frame của slice `B1-dense`) —
-  hiện tượng lặp lại đúng 5 lần trong 3 frame.
-- **Ảnh chụp:** `submission/screenshots/b1dense_012570_final_boxes.png`;
-  chi tiết box tại `submission/r3_diag/model_compare.html`.
-- **Expected impact:** Model đóng băng (YOLO26m) không có lớp `ThreeWheeler` — mọi xe ba bánh trong ảnh đều bị gán
-  nhầm thành `Car` và/hoặc `Truck` (đôi khi xuất **cả hai** nhãn trùng khít cho cùng một box, ví dụ
-  `adasind_012570.jpg` vị trí (224,906,323,1029) ra cả `M8 Car` và `M10 Truck`). Vì ADASIND (và nhiều cảnh đường
-  phố Nam Á tương tự) có mật độ xe ba bánh cao, bất kỳ số liệu quality-control nào dùng model này làm baseline sẽ
-  luôn bị lệch (tăng ảo `M thừa`, tăng ảo `M missing` do sai lớp) cho các slice nhiều `ThreeWheeler` — không phản
-  ánh đúng chất lượng nhãn thật của annotator.
-- **Owner:** `ai_team`
-- **Recommendation:** Bổ sung lớp `ThreeWheeler` (fine-tune hoặc thêm post-processing ánh xạ hình dạng đặc trưng
-  xe ba bánh) trước khi dùng model này làm gợi ý pre-label hoặc thước đo quality tự động cho các slice có nhiều xe
-  ba bánh; nếu chưa kịp, gắn cờ cảnh báo "không tin cậy cho ThreeWheeler" khi hiển thị `model_compare.md`.
+- **Frame:** `adasind_014670.jpg` (slice B1-edge), vật: đuôi auto-rickshaw ở center, L6 ThreeWheeler (360,953)–(397,1000). Reference có box cùng vật (360,964)–(396,1001) nhưng cao 37 px < H=40 nên bị lọc; model M7 Truck (359,953)–(398,1002) cao 49 px. Dòng liên quan: `findings.csv` r1_craft/r3_diag 014670 L6 (`E2_guideline_gap`, `action=escalate`); decision log D3.
+- **Ảnh chụp:** `submission/screenshots/b1edge_014670_L6_H40_borderline.png`
+- **Expected impact:** vật đổi trong/ngoài phạm vi chỉ vì 7–10 px ở mép trên. Trong slice 3 frame này, ca này chiếm 1/1 spurious còn lại ở zone `center` sau rework (`rework/delta.md`). Nó cũng làm precision micro của `local_quality.md` thấp hơn thực chất. Nếu không có quy tắc dung sai, mọi báo cáo zone có vật xa/nhỏ sẽ lẫn nhiễu vẽ tay với lỗi thật, và annotator có thể bị yêu cầu "sửa" nhãn đúng.
+- **Owner:** `guideline` (quyết định luật), phối hợp `qa` (người giữ teaching reference đo lại mép trên của R).
+- **Recommendation:** (1) Áp dụng patch R01b ở `20_guideline_patch.md` (dải 35–45 px là don't-care, attribute `near_threshold`). (2) Người giữ reference đo lại vật này trên ảnh gốc phóng to. Theo crop 6× của tôi, khung đuôi tối bắt đầu y≈957, nên chiều cao ≥42 px; nếu đồng ý thì nâng mép trên box R. (3) Cho tới khi có quyết định, **giữ** box L và không tính ca này vào lỗi annotator.
 
 ## Ticket 2
 
-- **Frame:** `adasind_036720.jpg`, object `L4+R1` (`ThreeWheeler` rất lớn, sát ego, box (660,690)-(1080,1470),
-  chiếm hơn 1/3 khung hình).
-- **Ảnh chụp:** `submission/screenshots/b1dense_012570_final_boxes.png` (tham khảo bố cục tương tự);
-  overlay đầy đủ ở `submission/r3_diag/model_compare.html`.
-- **Expected impact:** Model bỏ sót hoàn toàn (không có box nào chồng lên vùng này) một vật thể rất lớn, rất gần
-  ego và bị cắt bởi cả biên phải khung hình lẫn rìa ống kính. Nếu domain thật có nhiều tình huống xe/vật áp sát
-  ego (đường hẹp, tắc đường), model sẽ có một điểm mù hệ thống đúng lúc vật gần nhất — rủi ro an toàn cao hơn hẳn
-  so với lỗi ở vật xa.
-- **Owner:** `ai_team`
-- **Recommendation:** Bổ sung dữ liệu huấn luyện có vật thể cực gần/bị cắt nhiều bởi rìa ống kính (không chỉ méo
-  hình học rìa mà còn tỷ lệ khung hình bất thường); ưu tiên kiểm thử riêng nhóm case "vật áp sát ego" trước khi
-  triển khai.
+- **Frame:** `adasind_014670.jpg`, vật xe vàng bị khung cắt ở mép trái, L4 Bus (0,832)–(75,1095), R5 Truck (0,845)–(70,1100), M3 Bus (0,825)–(81,1089); IoU L/R 0.872. Dòng liên quan: r1_craft 014670 L4+R5, r3_diag L4+M3 và R5 (`E2_guideline_gap`, `action=escalate`); QA r2_qa L4; decision log D4.
+- **Ảnh chụp:** `submission/screenshots/b1edge_014670_L4_bus_vs_truck.png`
+- **Expected impact:** phần phân biệt class (đầu/cabin, cửa khách) nằm ngoài khung. Ba nguồn cho hai đáp án (L, M: Bus; R: Truck). `local-quality` tính một FP Bus + một FN Truck, làm Bus/Truck thành "nhãn thấp nhất" (precision/recall 0.000) dù hình học đúng. Nếu không có luật, mỗi annotator tự chọn một kiểu; vật bị cắt ở mép sẽ nhiễu class nhiều nhất đúng ở vùng rìa fisheye.
+- **Owner:** `guideline`.
+- **Recommendation:** thêm vào R04 một quy tắc cho xe bị cắt: nếu phần thấy không đủ phân biệt Bus/Truck thì chọn theo dấu hiệu thấy được theo danh sách ưu tiên (cửa sổ khách dọc thân → Bus; thùng hàng/lá chớp thùng → Truck). Nếu vẫn mơ hồ, gán `ignore_region` `reason=unreadable` cho phần xe đó. Cần reference owner xem frame lân cận (nếu có trong ADASIND) trước khi chốt class cho ca này. Trong lúc chờ, giữ L4=Bus và ghi `keep_with_reason` sau khi có quyết định.

@@ -1,14 +1,5 @@
 # Sensor context
 
-- Rig: ADASIND không kèm tài liệu rig, ghi theo quan sát trên `adasind_001320.jpg` (frame trong slice
-  `B1-dense`). Camera gắn trên xe hai bánh (xe máy), hướng ống kính theo chiều xe di chuyển tới — khung hình
-  cho thấy mặt đường phía trước, các xe khác (xe ba bánh, xe máy) và người đi bộ cùng chiều, không phải camera
-  lùi phía sau.
-- `ego_body` nhìn thấy ở góc dưới-trái khung hình: một phần cẳng tay/bàn tay đang nắm tay lái và một phần ống
-  quần/đùi của người lái xe (ego rider), tại vị trí khoảng x=0–220, y=1750–1920 trên ảnh 1080×1920. Đây là phần
-  cơ thể của người điều khiển xe gắn camera, không phải đối tượng cần gán nhãn.
-- Vòng kính (lens circle) chiếm gần trọn chiều ngang khung hình (đường kính ~1620 px trên ảnh rộng 1080 px,
-  nghĩa là vòng kính bị cắt hai bên trái/phải) và lệch lên phía trên theo chiều dọc: tâm vòng khoảng y≈891 trên
-  ảnh cao 1920 px, bán kính ~810 px, nên viền đen phía trên khung hình rất mỏng (~80 px) trong khi viền đen phía
-  dưới dày hơn nhiều (~220 px, từ y≈1701 đến 1920). Hai polygon `ignore_region` (lens_border) trong prefill của
-  slice khớp với ranh giới vòng kính này ở cả ba frame.
+- Rig (theo quan sát ảnh, ADASIND không kèm tài liệu rig chi tiết): **một** camera fisheye gắn trên **xe hai bánh**, hướng về phía trước theo chiều xe chạy, nhìn thấy mặt đường phía trước, xe cùng chiều (xe ba bánh, xe máy, xe tải) và lề đường hai bên. Ảnh dọc 1080×1920. Đây là camera đơn, không phải bộ bốn camera SVM, nên không có seam hay góc nhìn sau/hai bên.
+- `ego_body` nhìn thấy ở **góc trái-dưới** trong vòng kính: cẳng tay + bàn tay người lái nắm tay lái, gương/tay lái xe máy, đùi/quần người lái. Ví dụ: `adasind_001320.jpg` khoảng x 0–300, y 1100–1660; `adasind_014670.jpg` khoảng x 0–290, y 1160–1700; `adasind_034080.jpg` khoảng x 0–200, y 1270–1700; C0 `adasind_019560.jpg` chỉ thấy một dải thân xe/chân ở mép trái, x 0–150, y 1070–1565. Theo R07, hai frame 006840 và 271039 không thấy thân xe (không thuộc slice của tôi).
+- Vòng kính (lens circle) gần tròn, lệch lên nửa trên khung: tâm khoảng (455–606, 891–922), bán kính ~770–812 px (`assets/frames.csv`). Đường kính (~1540–1620 px) **lớn hơn** bề ngang ảnh (1080 px), nên vòng bị cắt ở hai cạnh trái/phải. Theo chiều dọc, vòng chiếm khoảng y 80–1730, tức ~85% chiều cao; phần đen ngoài vòng mỏng ở trên (~80–130 px) và dày ở dưới (~190–220 px). Hai polygon `lens_border` import sẵn mỗi frame bám ranh giới này.

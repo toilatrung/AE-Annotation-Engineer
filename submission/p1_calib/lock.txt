@@ -1,9 +1,9 @@
 round: calib
 slice: C0
-sha256: 1a09ac33fc746cc3c7707779a2489d2bb378cd991ee61d8a9bff25c45b3cd0d9
-code: 1A09-AC33
-locked_at: 2026-09-29T09:58:03+07:00
-shapes: box=5, polygon=2
+sha256: 0a64cb1144b068df4f54619259a7b7168cbb455d7cd54cbb4d8705f6ad33a5fd
+code: 0A64-CB11
+locked_at: 2026-09-29T04:07:50+00:00
+shapes: box=9, polygon=3
 prefill_kept: 0
 prefill_edited: 0
-new: 5
+new: 9
