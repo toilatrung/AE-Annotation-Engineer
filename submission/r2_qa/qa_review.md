@@ -1,18 +1,17 @@
-# QA review · B1-dense
+# QA review · B1-dense (bản khóa của trung, mã khóa E19E-0F0F)
 
-Mã khóa: E19E-0F0F
-
-**Ghi chú quy trình:** nhóm 3 người (huy, manh, trung) đổi bài theo vòng A→B→C→A (`huy` soát `manh`, `manh` soát
-`trung`, `trung` soát `huy` — xem `submission/00_setup/team.json`). Tại thời điểm làm bài, chưa nhận được file đã
-khóa của `huy` (repo riêng, chưa trao đổi export) sau hơn 5 phút chờ, nên theo `docs/03-roles-rotation-vi.md` coi
-như solo và chuyển sang **cold review** chính bản khóa `r1_craft` của mình (slice `B1-dense`), chỉ dùng luật ở
-`docs/02-rules-vi.md`, chưa mở teaching reference/model/worked overlay.
+**Ghi chú quy trình:** Tôi (manh) soát slice `B1-dense` của `trung` theo vòng A→B→C→A (`manh` soát `trung` — xem
+`submission/00_setup/team.json`). Đã kiểm sha256 file `r1_craft/annotations.xml` của trung khớp đúng
+`e19e0f0ff688bde6bae51d21bfe7e3898b01b4f6827b4a462047422fb465581f` = mã khóa `E19E-0F0F` (file toàn vẹn, chưa bị
+sửa sau khi khóa). Soát chỉ bằng luật ở `docs/02-rules-vi.md`, chưa mở teaching reference/model/worked overlay
+cho slice này.
 
 | frame | object_ref | rule_id | nhận xét |
 |---|---|---|---|
-| adasind_012570.jpg | L2+L3 (hai Pedestrian) | R05 | Hai người đi bộ đứng/đi sát nhau, vai trái của người bên phải (L3) chồng nhẹ lên vai người bên trái (L2) khoảng 10–15% diện tích ước lượng. Tôi đã đánh `occluded=false` cho cả hai vì thân người vẫn nhận diện được riêng biệt; cần người soát xác nhận có nên đổi L3 thành `occluded=true` không. |
-| adasind_036720.jpg | L (ThreeWheeler lớn, sát ego) | R05, R07 | Box ThreeWheeler (660,690)-(1080,1470) rất gần polygon `ego_body` phía dưới (khoảng cách theo trục y ~90px) và tiếp giáp mép phải khung hình (`truncated=true`). Ranh giới giữa "thân xe ba bánh" và "thân xe/kính xe ego" khó phân định tuyệt đối ở vùng này; cần soát lại xem có phần nào của box đang lấn vào phần thân xe ego hay ngược lại. |
-| adasind_012570.jpg | L (Car, mép trái) | R02 | Box Car (0,918)-(32,1000) chỉ rộng 32px — một mảnh rất hẹp của xe đỏ bị cắt bởi mép khung. Đã vẽ bám theo đúng phần nhìn thấy trên ảnh gốc (không đoán phần bị cắt), nhưng vì bề rộng box quá hẹp so với các box khác, cần người soát xác nhận không bỏ sót phần xe còn nhìn thấy được ở sát mép hơn nữa. |
+| adasind_012570.jpg | Bike (326,918,381,997) | R03 | Trong khung box `Bike` này, nhìn trên ảnh gốc thấy một phần màu trắng (có thể là một xe hơi/van) ở phía sau/cạnh người lái xe máy, không hoàn toàn là thân xe máy. R03 chỉ quy định "rider + xe hai bánh = một box", không bao gồm vật khác đứng/đậu cạnh đó. Đề nghị trung kiểm lại xem có cần tách một box `Car` riêng cho phần màu trắng phía sau không, trước khi coi đây là một box hoàn chỉnh. |
+| adasind_012570.jpg | Car (0,918,32,1000) | R02 | Box rộng chỉ 32px — một mảnh rất hẹp của xe đỏ bị cắt bởi mép khung trái. Đã bám đúng phần nhìn thấy trên ảnh gốc (đúng R02), nhưng biên rộng hẹp này nên được trung xác nhận lại là đã lấy đủ phần còn thấy được, không thiếu. |
+| adasind_036720.jpg | ThreeWheeler (660,690,1080,1470) | R05, R07 | Box rất lớn, sát polygon `ego_body` phía dưới và chạm biên phải khung hình (`truncated=true` — đúng, vì chạm x=1080). Khoảng cách giữa cạnh dưới box (y=1470) và polygon `ego_body` gần nhất (~y=1560–1650) là ~90–180px, không chồng lấn — ranh giới giữa "thân xe ba bánh" và "thân xe ego" ở đây là rõ ràng, không phải lỗi. Ghi nhận đã kiểm, không phải finding. |
 
-Không có ca nào trong ba ca trên đổi nhãn chính (class) — chỉ là điểm cần xác nhận thêm về `occluded` và ranh giới
-hình học, đúng tinh thần P3 "soát chỉ bằng luật, chưa biết reference".
+**Kết luận:** 1 điểm cần trung tự xác nhận lại (Bike/Car ở `adasind_012570.jpg`, theo R03) — đây là ca khó vì hai
+vật gần/chồng nhau, chỉ soát bằng luật (chưa mở reference) nên chỉ nêu được là "cần kiểm tra thêm", không khẳng
+định đúng/sai. Hai điểm còn lại đã kiểm và đạt yêu cầu.
