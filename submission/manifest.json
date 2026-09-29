@@ -148,12 +148,12 @@
     {
       "file": "findings.csv",
       "lines": 34,
-      "sha256": "338cdc4c0852ab8528b87aaca06bc3fdff6154470125a2a09759d8d23de3bd1a"
+      "sha256": "185a8aa3c836aa738a1791064d54f15056a401bcb05caabd79eccf90d5f6a153"
     },
     {
       "file": "10_error_card.md",
-      "lines": 49,
-      "sha256": "bb3e618079c4e0aaf04b2b4651adc57c62c0943564ca555ec067720db75e85b5"
+      "lines": 74,
+      "sha256": "b8ceca00388366aa43d2ae5576ea1881970d93ed718876e285ce753e68e557dc"
     },
     {
       "file": "20_guideline_patch.md",

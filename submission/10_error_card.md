@@ -23,6 +23,31 @@
 - MISSING: 14 (ví dụ frame adasind_019560.jpg)
 - BOX_GEOMETRY: 3 (ví dụ frame adasind_036720.jpg)
 
+## Đọc `r3_diag/local_quality.md`
+
+Đây là phép đo offline (ghép IoU≥0.5, chỉ rectangle, so với **teaching reference** — không phải gold set) trên
+bản export `r1_craft` **đã khóa** (`E19E-0F0F`, trước rework): `TP=16, FP=2, FN=3`, trên 20 lần đối chiếu hình học
+→ `micro accuracy=0.800`, `micro precision=0.889`, `micro recall=0.842`, `mean IoU của các cặp TP=0.834` (khớp
+hình học khá chặt khi đã bắt đúng cặp). Đọc theo class: **`Bike` là class yếu nhất** — `TP=3, FP=2, FN=2`,
+`precision=recall=0.600`, thấp hẳn so với `ThreeWheeler`/`Pedestrian`/`Truck` (đều đạt 1.000). Theo frame:
+`adasind_012570.jpg` kéo toàn bộ số xấu xuống (`TP=6, FP=2, FN=3, accuracy=0.600`) trong khi hai frame còn lại
+đạt `accuracy=1.000`.
+
+**Truy một xung đột cụ thể về đúng ảnh:** dòng `mismatching_label` trong
+`r3_diag/local_quality_confusion.csv`/`local_quality_conflicts.csv` ghi rõ `frame=adasind_012570.jpg, left#6
+(Bike) ↔ reference#7 (Car), IoU=0.573` — đây chính là ca `L6` đã phân tích ở trên (người lái xe máy che một phần
+xe hơi phía sau); hai dòng `missing_annotation` (`reference#8`, `reference#9`, đều `Bike`) cũng cùng cụm này. Đây
+là lý do duy nhất khiến `Bike` tụt xuống `precision/recall=0.6` — không phải `Bike` khó nói chung, mà là **một
+cụm chồng lấn cụ thể** đã sửa ở vòng rework (số liệu `local_quality` này đứng yên vì đo trên bản khóa `r1_craft`
+gốc, không tự cập nhật sau rework — muốn thấy số mới phải chạy lại `local-quality` trên bản rework, ngoài phạm vi
+bắt buộc của bài).
+
+**Giới hạn khi đọc số này:** chỉ 3 frame/20 lần đối chiếu — một cụm lỗi duy nhất (ca `L6`) đã đủ kéo `Bike
+recall` từ 1.0 xuống 0.6, nên chỉ số theo class ở mẫu nhỏ này rất nhạy với từng ca đơn lẻ, không nên suy rộng
+thành "Bike khó gán nhãn hơn ThreeWheeler". Ngưỡng ghép `IoU≥0.5` là quy ước riêng của lab, không phải chuẩn
+ngành; và `reference` là bản nháp Lab Coach sửa tay (`docs/05-taxonomy-vi.md`), không phải gold set đã kiểm
+nhiều người — số đo này mô tả độ khớp với MỘT bản tham chiếu, không phải điểm rubric hay chứng nhận chất lượng.
+
 ## Phân tích của bạn
 
 Hai bảng trên do `python3 lab11.py card` tính từ `findings.csv`; chạy lại lệnh sẽ cập nhật bảng và giữ nguyên mục này. Viết cho lỗi nổi bật nhất, dẫn frame/`object_ref`.
