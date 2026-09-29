@@ -1,12 +1,16 @@
 {
   "members": [
+    "huy",
+    "manh",
     "trung"
   ],
   "assignments": {
-    "trung": "B4-dense"
+    "huy": "B1-edge",
+    "manh": "B4-edge",
+    "trung": "B1-dense"
   },
   "self": "trung",
-  "slice": "B4-dense",
+  "slice": "B1-dense",
   "degrade": [],
   "current_slice": "B4-dense",
   "support_prefill": false,
