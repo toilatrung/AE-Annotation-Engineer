@@ -1,0 +1,9 @@
+round: rework
+slice: B1-dense
+sha256: 5f9e880058f2c32bb9c1440c14d37c763cafc7c924fce1761460723ee52724ec
+code: 5F9E-8800
+locked_at: 2026-09-29T10:25:24+07:00
+shapes: box=19, polygon=14
+prefill_kept: 3
+prefill_edited: 0
+new: 16
