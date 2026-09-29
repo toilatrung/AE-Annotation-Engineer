@@ -1,9 +1,9 @@
 camera_id,slice_type,frames,risk,rationale
-front,normal,,TODO,TODO
-front,hard,,TODO,TODO
-rear,normal,,TODO,TODO
-rear,hard,,TODO,TODO
-left,normal,,TODO,TODO
-left,hard,,TODO,TODO
-right,normal,,TODO,TODO
-right,hard,,TODO,TODO
+front,normal,30,medium,"Điều kiện lái thường phía trước, ít vật cắt ngang bất ngờ; đủ để theo dõi drift chất lượng theo thời gian."
+front,hard,20,high,"Giao lộ giờ cao điểm, ngược sáng, xe/người cắt ngang tốc độ cao — rủi ro va chạm trực diện cao nhất trong 4 hướng."
+rear,normal,28,medium,"Bối cảnh lùi/theo sau thông thường, tốc độ thấp."
+rear,hard,22,high,"Vật rất gần trong điểm mù khi lùi, ego_body (cản sau) che khuất nhiều — dễ bỏ sót vật sát đuôi xe."
+left,normal,25,medium,"Người/xe cố định ở làn bên trái, ít méo hình, điều kiện thường."
+left,hard,25,high,"Góc seam với front/rear bị méo rìa mạnh nhất trong 4 camera; xe máy/người đi song song sát hông dễ nhầm ranh giới."
+right,normal,25,medium,"Người/xe cố định ở làn bên phải, tương tự left, điều kiện thường."
+right,hard,25,high,"Seam với front/rear phía bên phải, rủi ro mở cửa/người sát hông tương tự left."
