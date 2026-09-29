@@ -1,0 +1,5 @@
+frame,type,left,reference,left_label,reference_label,iou
+adasind_012570.jpg,mismatching_label,6,7,Bike,Car,0.573
+adasind_012570.jpg,extra_annotation,8,,Bike,,N/A
+adasind_012570.jpg,missing_annotation,,8,,Bike,N/A
+adasind_012570.jpg,missing_annotation,,9,,Bike,N/A
