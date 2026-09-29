@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <task>
+      <id>19</id>
+      <name>Day11 · parking_line · public-sample</name>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2026-09-28 10:42:32.349576+00:00</created>
+      <updated>2026-09-28 11:32:47.653463+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>22</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>http://localhost:8080/api/tasks/19/dataset/export/api/jobs/22</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>labadmin</username>
+        <email>labadmin@example.local</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>parking_line</name>
+          <color>#ffcc00</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>free_space</name>
+          <color>#35c98b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </task>
+    <dumped>2026-09-29 02:57:07.630019+00:00</dumped>
+  </meta>
+  <image id="0" name="parking-lot-core.jpg" width="960" height="720">
+    <polyline label="parking_line" source="manual" occluded="0" points="533.40,720.00;405.30,649.70" z_order="0">
+    </polyline>
+    <polyline label="parking_line" source="manual" occluded="0" points="699.40,622.10;960.00,684.50" z_order="0">
+    </polyline>
+    <polygon label="free_space" source="manual" occluded="0" points="40.90,681.50;399.60,651.90;520.70,720.00;35.40,720.00" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="412.30,649.20;690.20,623.20;960.00,686.80;960.00,719.41;541.30,720.00" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="919.50,597.70;960.00,603.90;960.00,681.80;703.00,622.10" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="174.90,521.80;276.33,517.75;419.50,555.30;250.30,562.90" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="60.80,523.00;168.40,521.00;244.30,563.80;51.50,572.00" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="279.20,517.20;374.70,514.20;576.00,545.40;422.30,553.40" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="0.00,523.90;57.10,523.00;44.80,571.60;0.00,573.00" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="378.20,513.70;487.80,513.10;713.67,537.53;579.90,544.10" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="492.50,512.70;553.90,508.30;826.20,530.60;715.96,535.79" z_order="0">
+    </polygon>
+    <polygon label="free_space" source="manual" occluded="0" points="65.88,498.38;132.10,499.00;146.50,507.40;63.90,509.90" z_order="0">
+    </polygon>
+  </image>
+</annotations>
